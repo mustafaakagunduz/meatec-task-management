@@ -1,3 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --default-transition-duration: 200ms;
+}
+
+@variant dark (.dark &);
