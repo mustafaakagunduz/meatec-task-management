@@ -5,7 +5,7 @@
     "logout": "Çıkış",
     "username": "Kullanıcı Adı",
     "password": "Şifre",
-    "loginTitle": "Tekrar Hoş Geldiniz",
+    "loginTitle": "Hoş Geldiniz",
     "loginSubtitle": "Hesabınıza erişmek için bilgilerinizi girin",
     "registerTitle": "Hesap Oluştur",
     "registerSubtitle": "Görevlerinizi verimli şekilde yönetmek için bize katılın",
@@ -52,6 +52,7 @@
     "pending": "Beklemede",
     "completed": "Tamamlandı",
     "noTasks": "Görev bulunamadı",
+    "noTasksDescription": "İlk görevinizi oluşturarak başlayın!",
     "createTaskButton": "Görev Oluştur",
     "updateTaskButton": "Görev Güncelle",
     "deleteConfirm": "Bu görevi silmek istediğinizden emin misiniz?",
@@ -73,7 +74,8 @@
     "search": "Ara",
     "filter": "Filtrele",
     "clear": "Temizle",
-    "welcome": "Hoş geldiniz"
+    "welcome": "Hoş geldiniz",
+    "appTitle": "MEAtec Görev Yöneticisi"
   },
   "navigation": {
     "dashboard": "Ana Sayfa",

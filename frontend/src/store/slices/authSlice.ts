@@ -30,7 +30,7 @@ interface AuthResponse {
 }
 
 const initialState: AuthState = {
-  user: null,
+  user: localStorage.getItem('meatec_user') ? JSON.parse(localStorage.getItem('meatec_user')!) : null,
   token: localStorage.getItem('meatec_token'),
   isAuthenticated: !!localStorage.getItem('meatec_token'),
   loading: false,
@@ -45,8 +45,9 @@ export const loginUser = createAsyncThunk<AuthResponse, LoginCredentials>(
       const response = await api.post('/auth/login', credentials);
       const { token, user } = response.data;
       
-      // Store token in localStorage
+      // Store token and user in localStorage
       localStorage.setItem('meatec_token', token);
+      localStorage.setItem('meatec_user', JSON.stringify(user));
       
       return { token, user };
     } catch (error: any) {
@@ -63,8 +64,9 @@ export const registerUser = createAsyncThunk<AuthResponse, RegisterCredentials>(
       const response = await api.post('/auth/register', credentials);
       const { token, user } = response.data;
       
-      // Store token in localStorage
+      // Store token and user in localStorage
       localStorage.setItem('meatec_token', token);
+      localStorage.setItem('meatec_user', JSON.stringify(user));
       
       return { token, user };
     } catch (error: any) {
@@ -85,8 +87,9 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = null;
       
-      // Remove token from localStorage
+      // Remove token and user from localStorage
       localStorage.removeItem('meatec_token');
+      localStorage.removeItem('meatec_user');
     },
     clearError: (state) => {
       state.error = null;

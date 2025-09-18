@@ -5,7 +5,7 @@
     "logout": "Abmelden",
     "username": "Benutzername",
     "password": "Passwort",
-    "loginTitle": "Willkommen zurück",
+    "loginTitle": "Willkommen",
     "loginSubtitle": "Geben Sie Ihre Anmeldedaten ein, um auf Ihr Konto zuzugreifen",
     "registerTitle": "Konto erstellen",
     "registerSubtitle": "Treten Sie uns bei, um Ihre Aufgaben effizient zu verwalten",
@@ -52,6 +52,7 @@
     "pending": "Ausstehend",
     "completed": "Abgeschlossen",
     "noTasks": "Keine Aufgaben gefunden",
+    "noTasksDescription": "Erstellen Sie Ihre erste Aufgabe, um zu beginnen!",
     "createTaskButton": "Aufgabe erstellen",
     "updateTaskButton": "Aufgabe aktualisieren",
     "deleteConfirm": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?",
@@ -76,7 +77,7 @@
     "welcome": "Willkommen"
   },
   "navigation": {
-    "dashboard": "Dashboard",
+    "dashboard": "Armaturenbrett",
     "tasks": "Aufgaben",
     "profile": "Profil",
     "settings": "Einstellungen"
@@ -87,6 +88,22 @@
     "darkMode": "Dunkler Modus",
     "lightMode": "Heller Modus",
     "preferences": "Einstellungen"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "loading": "Lädt...",
+    "error": "Ein Fehler ist aufgetreten",
+    "success": "Erfolgreich!",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "search": "Suchen",
+    "filter": "Filter",
+    "clear": "Löschen",
+    "welcome": "Willkommen",
+    "appTitle": "MEAtec Aufgaben-Manager"
   },
   "dashboard": {
     "welcome": "Willkommen zu Ihrem Aufgabenverwaltungs-Dashboard, {{username}}!"

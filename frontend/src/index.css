@@ -5,3 +5,22 @@
 }
 
 @variant dark (.dark &);
+
+/* Grid pattern background */
+.grid-pattern {
+  /* Light mode - beige background with brown lines */
+  background-color: #fef7ed; /* amber-50 */
+  background-image: 
+    linear-gradient(rgba(146, 64, 14, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(146, 64, 14, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Dark mode override */
+.dark .grid-pattern {
+  background-color: #0f172a; /* slate-900 */
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

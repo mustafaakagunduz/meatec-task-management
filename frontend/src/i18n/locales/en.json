@@ -5,7 +5,7 @@
     "logout": "Logout",
     "username": "Username",
     "password": "Password",
-    "loginTitle": "Welcome Back",
+    "loginTitle": "Welcome",
     "loginSubtitle": "Enter your credentials to access your account",
     "registerTitle": "Create Account",
     "registerSubtitle": "Join us to manage your tasks efficiently",
@@ -52,6 +52,7 @@
     "pending": "Pending",
     "completed": "Completed",
     "noTasks": "No tasks found",
+    "noTasksDescription": "Get started by creating your first task!",
     "createTaskButton": "Create Task",
     "updateTaskButton": "Update Task",
     "deleteConfirm": "Are you sure you want to delete this task?",
@@ -73,7 +74,8 @@
     "search": "Search",
     "filter": "Filter",
     "clear": "Clear",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "appTitle": "MEAtec Task Manager"
   },
   "navigation": {
     "dashboard": "Dashboard",

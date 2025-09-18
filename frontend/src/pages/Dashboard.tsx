@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { customToast } from '../utils/toast';
 import { logout } from '../store/slices/authSlice';
+import { fetchTasks } from '../store/slices/taskSlice';
 import { RootState, AppDispatch } from '../store';
 import { useTheme } from '../hooks/useTheme';
+import { LANGUAGES, Language } from '../i18n';
+import TaskList from '../components/TaskList';
+import TaskForm from '../components/TaskForm';
 
 const Dashboard: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -13,12 +17,50 @@ const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { tasks } = useSelector((state: RootState) => state.tasks);
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [taskFilter, setTaskFilter] = useState<'all' | 'COMPLETED' | 'PENDING'>('all');
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
     }
   }, [isAuthenticated, navigate]);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchTasks());
+    }
+  }, [isAuthenticated, dispatch]);
+
+  const changeLanguage = (lng: Language) => {
+    i18n.changeLanguage(lng);
+    setIsLangDropdownOpen(false);
+  };
+
+  const currentLanguage = LANGUAGES[i18n.language as Language] || LANGUAGES.en;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsLangDropdownOpen(false);
+      }
+    };
+
+    const handleOpenTaskForm = () => {
+      setShowTaskForm(true);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('openTaskForm', handleOpenTaskForm);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('openTaskForm', handleOpenTaskForm);
+    };
+  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -30,22 +72,69 @@ const Dashboard: React.FC = () => {
     return null;
   }
 
+  // Calculate task statistics
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter(task => task.status === 'COMPLETED').length;
+  const pendingTasks = tasks.filter(task => task.status === 'PENDING').length;
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <header className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div className="min-h-screen grid-pattern text-gray-900 dark:text-white">
+      <header className="bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-blue-600 dark:text-blue-400">
-                MEAtec Task Manager
+              <h1 className="text-xl font-semibold text-amber-800 dark:text-blue-400">
+                {t('common.appTitle')}
               </h1>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-4">
+              {/* User Info */}
+              <div className="text-sm">
+                <p className="text-amber-800 dark:text-gray-300">
+                  {t('common.welcome')}, {user.username}
+                </p>
+              </div>
+              
+              {/* Language Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-br from-gray-50/60 to-gray-100/60 dark:from-gray-800/60 dark:to-gray-700/60 backdrop-blur-sm shadow-lg border border-gray-200/50 dark:border-gray-600/50 hover:shadow-xl hover:scale-105 transition-all duration-300 text-amber-700 dark:text-gray-300"
+                  title={t('settings.language')}
+                >
+                  <span className="text-sm font-medium">{currentLanguage.name}</span>
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {isLangDropdownOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-40 bg-amber-50/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-amber-200 dark:border-gray-700 py-2 z-50">
+                    {Object.entries(LANGUAGES).map(([code, lang]) => (
+                      <button
+                        key={code}
+                        onClick={() => changeLanguage(code as Language)}
+                        className={`w-full px-4 py-2 text-left hover:bg-amber-100 dark:hover:bg-gray-700 transition-colors text-amber-800 dark:text-gray-300 ${
+                          i18n.language === code ? 'bg-amber-100 dark:bg-blue-900/20 text-amber-900 dark:text-blue-400' : ''
+                        }`}
+                      >
+                        <span className="text-sm">{lang.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="p-2 rounded-lg bg-gradient-to-br from-gray-50/60 to-gray-100/60 dark:from-gray-800/60 dark:to-gray-700/60 backdrop-blur-sm shadow-lg border border-gray-200/50 dark:border-gray-600/50 hover:shadow-xl hover:scale-105 transition-all duration-300 text-amber-700 dark:text-gray-300"
                 title={theme === 'light' ? t('settings.darkMode') : t('settings.lightMode')}
               >
                 {theme === 'light' ? (
@@ -59,25 +148,16 @@ const Dashboard: React.FC = () => {
                 )}
               </button>
 
-              {/* User Info */}
-              <div className="flex items-center space-x-3">
-                <div className="text-sm">
-                  <p className="text-gray-700 dark:text-gray-300">
-                    {t('common.welcome')}, {user.username}
-                  </p>
-                </div>
-                
-                {/* Logout Button */}
-                <button
-                  onClick={handleLogout}
-                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600"
-                >
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                  {t('auth.logout')}
-                </button>
-              </div>
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="p-2 rounded-lg bg-gradient-to-br from-gray-50/60 to-gray-100/60 dark:from-gray-800/60 dark:to-gray-700/60 backdrop-blur-sm shadow-lg border border-gray-200/50 dark:border-gray-600/50 hover:shadow-xl hover:scale-105 transition-all duration-300 text-amber-700 dark:text-gray-300"
+                title={t('auth.logout')}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -86,89 +166,94 @@ const Dashboard: React.FC = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {t('navigation.dashboard')}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              {t('dashboard.welcome', { username: user.username })}
-            </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
+              <div 
+                onClick={() => setTaskFilter('all')}
+                className={`group bg-gradient-to-br from-gray-50/60 to-gray-100/60 dark:from-gray-800/60 dark:to-gray-700/60 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer relative ${
+                  taskFilter === 'all' 
+                    ? 'border-amber-400 dark:border-blue-400' 
+                    : 'border-gray-200/50 dark:border-gray-600/50'
+                }`}
+              >
+                <div className="absolute -left-10 top-1/2 transform -translate-y-1/2 -rotate-12 opacity-8 dark:opacity-5 pointer-events-none">
+                  <svg className="h-32 w-32 text-amber-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                </div>
+                <div className="p-4 text-center relative z-10 h-16 flex items-center justify-center">
+                  <div className="relative">
+                    <div className="text-xl font-bold text-amber-700 dark:text-gray-300 transition-all duration-300 ease-in-out group-hover:-translate-y-8 group-hover:opacity-0">
+                      {t('tasks.title')}
                     </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                          {t('tasks.title')}
-                        </dt>
-                        <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                          0
-                        </dd>
-                      </dl>
+                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-amber-800 dark:text-white opacity-0 translate-y-8 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-y-0">
+                      {totalTasks}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
+              <div 
+                onClick={() => setTaskFilter('PENDING')}
+                className={`group bg-gradient-to-br from-gray-50/60 to-gray-100/60 dark:from-gray-800/60 dark:to-gray-700/60 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer relative ${
+                  taskFilter === 'PENDING' 
+                    ? 'border-amber-400 dark:border-blue-400' 
+                    : 'border-gray-200/50 dark:border-gray-600/50'
+                }`}
+              >
+                <div className="absolute -left-10 top-1/2 transform -translate-y-1/2 -rotate-12 opacity-8 dark:opacity-5 pointer-events-none">
+                  <svg className="h-32 w-32 text-amber-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="p-4 text-center relative z-10 h-16 flex items-center justify-center">
+                  <div className="relative">
+                    <div className="text-xl font-bold text-amber-700 dark:text-gray-300 transition-all duration-300 ease-in-out group-hover:-translate-y-8 group-hover:opacity-0">
+                      {t('tasks.pending')}
                     </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                          {t('tasks.completed')}
-                        </dt>
-                        <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                          0
-                        </dd>
-                      </dl>
+                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-amber-800 dark:text-white opacity-0 translate-y-8 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-y-0">
+                      {pendingTasks}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+              <div 
+                onClick={() => setTaskFilter('COMPLETED')}
+                className={`group bg-gradient-to-br from-gray-50/60 to-gray-100/60 dark:from-gray-800/60 dark:to-gray-700/60 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer relative ${
+                  taskFilter === 'COMPLETED' 
+                    ? 'border-amber-400 dark:border-blue-400' 
+                    : 'border-gray-200/50 dark:border-gray-600/50'
+                }`}
+              >
+                <div className="absolute -left-10 top-1/2 transform -translate-y-1/2 -rotate-12 opacity-8 dark:opacity-5 pointer-events-none">
+                  <svg className="h-32 w-32 text-amber-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="p-4 text-center relative z-10 h-16 flex items-center justify-center">
+                  <div className="relative">
+                    <div className="text-xl font-bold text-amber-700 dark:text-gray-300 transition-all duration-300 ease-in-out group-hover:-translate-y-8 group-hover:opacity-0">
+                      {t('tasks.completed')}
                     </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                          {t('tasks.pending')}
-                        </dt>
-                        <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                          0
-                        </dd>
-                      </dl>
+                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-amber-800 dark:text-white opacity-0 translate-y-8 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-y-0">
+                      {completedTasks}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="mt-8">
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                {t('tasks.newTask')}
-              </button>
+            
+            {/* Task List */}
+            <div className="mt-12">
+              <TaskList filter={taskFilter} />
             </div>
+            
+            {/* Task Form Modal */}
+            {showTaskForm && (
+              <TaskForm onClose={() => setShowTaskForm(false)} />
+            )}
           </div>
         </div>
       </main>

@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:5000/api';
+import api from '../../utils/axiosConfig';
 
 export type TaskStatus = 'PENDING' | 'COMPLETED';
 
@@ -47,22 +45,12 @@ const initialState: TaskState = {
   total: 0,
 };
 
-// Get auth token from localStorage
-const getAuthToken = () => localStorage.getItem('meatec_token');
-
-// Create axios config with auth header
-const createAuthConfig = () => ({
-  headers: {
-    Authorization: `Bearer ${getAuthToken()}`,
-  },
-});
-
 // Async thunks
 export const fetchTasks = createAsyncThunk<TasksResponse>(
   'tasks/fetchTasks',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/tasks`, createAuthConfig());
+      const response = await api.get('/tasks');
       return response.data;
     } catch (error: any) {
       const message = error.response?.data?.error || 'Failed to fetch tasks';
@@ -75,7 +63,7 @@ export const createTask = createAsyncThunk<Task, CreateTaskData>(
   'tasks/createTask',
   async (taskData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/tasks`, taskData, createAuthConfig());
+      const response = await api.post('/tasks', taskData);
       return response.data;
     } catch (error: any) {
       const message = error.response?.data?.error || 'Failed to create task';
@@ -88,7 +76,7 @@ export const updateTask = createAsyncThunk<Task, UpdateTaskData>(
   'tasks/updateTask',
   async ({ id, ...taskData }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/tasks/${id}`, taskData, createAuthConfig());
+      const response = await api.put(`/tasks/${id}`, taskData);
       return response.data;
     } catch (error: any) {
       const message = error.response?.data?.error || 'Failed to update task';
@@ -101,7 +89,7 @@ export const deleteTask = createAsyncThunk<number, number>(
   'tasks/deleteTask',
   async (taskId, { rejectWithValue }) => {
     try {
-      await axios.delete(`${API_BASE_URL}/tasks/${taskId}`, createAuthConfig());
+      await api.delete(`/tasks/${taskId}`);
       return taskId;
     } catch (error: any) {
       const message = error.response?.data?.error || 'Failed to delete task';
