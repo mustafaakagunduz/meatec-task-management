@@ -18,6 +18,7 @@ const TaskList: React.FC<TaskListProps> = ({ filter }) => {
   const { tasks, loading, error } = useSelector((state: RootState) => state.tasks);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -103,7 +104,13 @@ const TaskList: React.FC<TaskListProps> = ({ filter }) => {
       ) : (
         <div ref={parentRef} className="grid gap-4">
           {filteredTasks.map((task) => (
-            <TaskItem key={task.id} task={task} onEdit={handleEdit} />
+            <TaskItem 
+              key={task.id} 
+              task={task} 
+              onEdit={handleEdit}
+              isExpanded={expandedTaskId === task.id}
+              onToggleExpand={(taskId) => setExpandedTaskId(expandedTaskId === taskId ? null : taskId)}
+            />
           ))}
         </div>
       )}

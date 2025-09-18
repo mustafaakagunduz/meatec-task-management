@@ -9,14 +9,15 @@ import type { Task } from '../store/slices/taskSlice';
 interface TaskItemProps {
   task: Task;
   onEdit: (task: Task) => void;
+  isExpanded: boolean;
+  onToggleExpand: (taskId: string) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isExpanded, onToggleExpand }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { loading } = useSelector((state: RootState) => state.tasks);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   // Handle ESC key for delete modal
   useEffect(() => {
@@ -63,7 +64,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit }) => {
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
-    setIsExpanded(!isExpanded);
+    onToggleExpand(task.id);
   };
 
   return (
@@ -149,7 +150,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit }) => {
               isExpanded ? 'opacity-100' : 'opacity-0'
             } ${
               task.status === 'COMPLETED'
-                ? 'text-gray-400 dark:text-gray-500'
+                ? 'text-amber-600 dark:text-gray-500'
                 : 'text-amber-700 dark:text-gray-400'
             }`}>
               {task.description}
