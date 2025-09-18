@@ -29,7 +29,7 @@ This project uses npm workspaces. All commands should be run from the root direc
 
     ```bash
     git clone https://github.com/mustafaakagunduz/meatec-task-management.git
-    cd MEAtec
+    cd meatec-task-management
     ```
 
 2.  **Install Dependencies:**
@@ -40,12 +40,15 @@ This project uses npm workspaces. All commands should be run from the root direc
       ```
 
 3.  **Backend Environment Setup:**
-
-    - Create a `.env` file in the `backend` directory by copying the example file:
-      ```bash
-      cp backend/.env.example backend/.env
-      ```
-    - Open the `backend/.env` file and fill in your PostgreSQL database URL.
+    *   First, create a `.env` file inside the `backend` directory by copying the example file from the root directory:
+        ```bash
+        cp .env.example backend/.env
+        ```
+    *   Next, **you must edit the `backend/.env` file**. The copied file might not have the correct format. Ensure it contains the `DATABASE_URL` for your PostgreSQL database. For example:
+        ```env
+        DATABASE_URL="postgresql://YOUR_USERNAME:YOUR_PASSWORD@localhost:5432/meatec_taskmanager"
+        ```
+    *   Replace `YOUR_USERNAME` and `YOUR_PASSWORD` with your actual database credentials.
 
 4.  **Database Migration:**
 
