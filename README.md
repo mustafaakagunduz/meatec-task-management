@@ -52,10 +52,14 @@ This project uses npm workspaces. All commands should be run from the root direc
 
 4.  **Database Migration:**
 
-    - Run the Prisma migration to set up your database schema. This command needs to be run from the `backend` workspace.
+    - Navigate to the `backend` directory to run the database migration and generate the Prisma client.
       ```bash
-      npx prisma migrate dev --schema=./backend/prisma/schema.prisma
+      cd backend
+      npx prisma migrate dev
+      npx prisma generate
+      cd ..
       ```
+    - These commands will set up your database schema and create the Prisma client. You run them from within the `backend` directory and then return to the root.
 
 5.  **Run the Application:**
     - Start both the backend and frontend development servers with a single command from the root directory:
