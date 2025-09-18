@@ -73,11 +73,43 @@ npm install
 
 ### 3. Database Setup
 
-Ensure PostgreSQL is running and create a database:
+Ensure your PostgreSQL server is running. You can create the database using either a command-line tool or a graphical interface.
+
+#### Method 1: Using the Command Line (Recommended)
+
+The quickest way is to use the `createdb` command-line utility that comes with PostgreSQL.
+
+Open your terminal (on macOS/Linux) or Command Prompt/PowerShell (on Windows) and run:
+
+```bash
+createdb meatec_taskmanager
+```
+
+Alternatively, you can connect to the PostgreSQL interactive terminal (`psql`) first:
+
+```bash
+psql -U postgres
+```
+*(You might be prompted for your password.)*
+
+Then, run the following SQL command inside the `psql` shell:
 
 ```sql
 CREATE DATABASE meatec_taskmanager;
 ```
+
+To exit `psql`, type `\q` and press Enter.
+
+#### Method 2: Using a GUI Tool (e.g., pgAdmin)
+
+If you prefer a graphical interface:
+
+1.  Open pgAdmin (or your preferred PostgreSQL GUI tool).
+2.  Connect to your PostgreSQL server.
+3.  In the object browser on the left, right-click on **Databases**.
+4.  Select **Create** -> **Database...**.
+5.  In the "Database" field, enter `meatec_taskmanager`.
+6.  Click **Save**.
 
 ### 4. Environment Configuration
 
