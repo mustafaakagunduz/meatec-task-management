@@ -1,287 +1,111 @@
-# MEAtec Task Management Application
+# Task Management Application
 
-A full-stack task management application with JWT authentication built with React, Node.js, and PostgreSQL.
+This is a full-stack task management application built for a case study at MEAtec. It uses a monorepo structure with npm workspaces for the frontend and backend.
 
-## 🚀 Features
-
-- **User Authentication**: Secure JWT-based registration and login
-- **Task Management**: Create, read, update, and delete tasks
-- **User Isolation**: Users can only access their own tasks
-- **Form Validation**: Frontend validation with React Hook Form + Zod
-- **Responsive Design**: Modern UI with TailwindCSS
-- **Type Safety**: Full TypeScript support
-
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Frontend
-- React (Vite)
-- TailwindCSS
-- Redux Toolkit
-- Axios
-- React Hook Form + Zod
-- React Router Dom
+
+*   React (Vite)
+*   TailwindCSS
+*   Redux Toolkit
+*   Axios
+*   React Hook Form + Zod
+*   Jest + React Testing Library
 
 ### Backend
-- Node.js + Express (TypeScript)
-- Prisma ORM
-- PostgreSQL
-- JWT Authentication
-- bcrypt (Password hashing)
 
-## 📋 Prerequisites
+*   Node.js with Express (TypeScript)
+*   Prisma ORM
+*   PostgreSQL
+*   JWT authentication
+*   Jest + Supertest
 
-Before running this application, make sure you have the following installed:
+## Local Setup & Running the Application
 
-- **Node.js** (v18 or higher)
-- **PostgreSQL** (v13 or higher)
-- **npm** or **yarn**
+This project uses npm workspaces. All commands should be run from the root directory unless specified otherwise.
 
-## 🔧 Local Setup Instructions
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd MEAtec
+    ```
 
-### 1. Clone the Repository
+2.  **Install Dependencies:**
+    *   Run the following command in the root directory. It will install dependencies for both `frontend` and `backend` workspaces.
+        ```bash
+        npm install
+        ```
 
-```bash
-git clone https://github.com/mustafaakagunduz/meatec-task-management.git
-cd meatec-task-management
-```
+3.  **Backend Environment Setup:**
+    *   Create a `.env` file in the `backend` directory by copying the example file:
+        ```bash
+        cp backend/.env.example backend/.env
+        ```
+    *   Open the `backend/.env` file and fill in your PostgreSQL database URL.
 
-### 2. Install Dependencies
+4.  **Database Migration:**
+    *   Run the Prisma migration to set up your database schema. This command needs to be run from the `backend` workspace.
+        ```bash
+        npx prisma migrate dev --schema=./backend/prisma/schema.prisma
+        ```
 
-```bash
-# Install root dependencies (for workspace management)
-npm install
+5.  **Run the Application:**
+    *   Start both the backend and frontend development servers with a single command from the root directory:
+        ```bash
+        npm run dev
+        ```
+    *   The backend server will be available at `http://localhost:3000`.
+    *   The frontend application will be available at `http://localhost:5173`.
 
-# Install frontend dependencies
-cd frontend
-npm install
-cd ..
+## Running Tests
 
-# Install backend dependencies
-cd backend
-npm install
-cd ..
-```
+Tests need to be run within their specific workspaces.
 
-### 3. Database Setup
+### Backend
 
-1. **Create PostgreSQL Database:**
-```bash
-createdb meatec_db
-```
+*   Navigate to the `backend` directory:
+    ```bash
+    cd backend
+    ```
+*   To run tests:
+    ```bash
+    npm test
+    ```
+*   To view test coverage:
+    ```bash
+    npm run test:coverage
+    ```
+    Open `coverage/lcov-report/index.html` in your browser.
 
-2. **Configure Environment Variables:**
-```bash
-# Copy the environment template
-cp .env.example backend/.env
+### Frontend
 
-# Edit backend/.env with your database credentials
-DATABASE_URL="postgresql://username:password@localhost:5432/meatec_db"
-JWT_SECRET="your-super-secret-jwt-key-here"
-JWT_EXPIRES_IN="7d"
-PORT=3000
-NODE_ENV="development"
-```
+*   Navigate to the `frontend` directory:
+    ```bash
+    cd frontend
+    ```
+*   To run tests:
+    ```bash
+    npm test
+    ```
+*   To view test coverage:
+    ```bash
+    npm run test:coverage
+    ```
+    Open `coverage/lcov-report/index.html` in your browser.
 
-3. **Run Database Migrations:**
-```bash
-cd backend
-npx prisma migrate deploy
-npx prisma generate
-cd ..
-```
-
-### 4. Running the Application
-
-You can run both frontend and backend simultaneously:
-
-```bash
-# From the root directory - runs both frontend and backend
-npm run dev
-```
-
-Or run them separately:
-
-```bash
-# Terminal 1 - Backend (from root directory)
-cd backend
-npm run dev
-
-# Terminal 2 - Frontend (from root directory)  
-cd frontend
-npm run dev
-```
-
-### 5. Access the Application
-
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:3000
-
-## 📡 API Endpoints
+## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login and receive JWT token
 
-### Tasks (Protected Routes)
-- `GET /api/tasks` - Get all tasks for authenticated user
-- `POST /api/tasks` - Create a new task
-- `PUT /api/tasks/:id` - Update an existing task
-- `DELETE /api/tasks/:id` - Delete a task
+*   `POST /api/auth/register`: Register a new user.
+*   `POST /api/auth/login`: Authenticate and return a JWT.
 
-### Request/Response Examples
+### Tasks
 
-#### Register User
-```bash
-POST /api/auth/register
-Content-Type: application/json
+*All task-related routes require a valid JWT.*
 
-{
-  "username": "john_doe",
-  "password": "securePassword123"
-}
-
-# Response (201 Created)
-{
-  "message": "User created successfully",
-  "userId": 1
-}
-```
-
-#### Login
-```bash
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "username": "john_doe", 
-  "password": "securePassword123"
-}
-
-# Response (200 OK)
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 1,
-    "username": "john_doe"
-  }
-}
-```
-
-#### Create Task
-```bash
-POST /api/tasks
-Authorization: Bearer <jwt_token>
-Content-Type: application/json
-
-{
-  "title": "Complete project documentation",
-  "description": "Write comprehensive README and API docs",
-  "status": "pending"
-}
-
-# Response (201 Created)
-{
-  "id": 1,
-  "title": "Complete project documentation",
-  "description": "Write comprehensive README and API docs", 
-  "status": "pending",
-  "userId": 1,
-  "createdAt": "2024-01-15T10:30:00Z",
-  "updatedAt": "2024-01-15T10:30:00Z"
-}
-```
-
-## 🗄️ Database Schema
-
-### Users Table
-```sql
-- id (Primary Key)
-- username (Unique)
-- password (Hashed)
-- createdAt
-- updatedAt
-```
-
-### Tasks Table
-```sql
-- id (Primary Key)
-- title (Required)
-- description (Optional)
-- status (pending/completed)
-- userId (Foreign Key -> Users.id)
-- createdAt
-- updatedAt
-```
-
-## 🧪 Testing (Optional)
-
-### Running Tests
-
-```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests
-cd frontend
-npm test
-
-# Test coverage
-npm run test:coverage
-```
-
-## 🔒 Security Features
-
-- **Password Hashing**: bcrypt with salt rounds
-- **JWT Authentication**: Secure token-based auth
-- **Input Validation**: Zod schemas for request validation
-- **User Isolation**: Users can only access their own data
-- **Environment Variables**: Sensitive data stored securely
-
-## 📝 Error Codes
-
-- **400**: Bad Request - Invalid input data
-- **401**: Unauthorized - Invalid or missing JWT token
-- **403**: Forbidden - User not authorized for this resource
-- **404**: Not Found - Resource does not exist
-- **409**: Conflict - Username already exists
-- **500**: Internal Server Error
-
-## 🚀 Deployment
-
-This application is ready for deployment on platforms like:
-- **Vercel** (Frontend)
-- **Railway/Render** (Backend)
-- **Supabase/PlanetScale** (Database)
-
-## 👨‍💻 Development
-
-### Project Structure
-```
-meatec-task-management/
-├── frontend/          # React application
-├── backend/           # Node.js API server
-├── .env.example       # Environment variables template
-├── package.json       # Root workspace configuration
-└── README.md          # This file
-```
-
-### Commit Conventions
-- `feat:` New features
-- `fix:` Bug fixes
-- `docs:` Documentation updates
-- `refactor:` Code refactoring
-- `test:` Test additions/updates
-
-## 📄 License
-
-This project is created as a case study assignment.
-
-## 🤝 Contributing
-
-This is a portfolio project. For any questions or suggestions, please open an issue.
-
----
-
-**Author**: Mustafa Akagündüz  
-**Repository**: https://github.com/mustafaakagunduz/meatec-task-management
+*   `GET /api/tasks`: Get tasks for the logged-in user.
+*   `POST /api/tasks`: Create a new task.
+*   `PUT /api/tasks/:id`: Update an existing task.
+*   `DELETE /api/tasks/:id`: Delete a task.
