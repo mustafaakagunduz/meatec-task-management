@@ -5,6 +5,7 @@ A full-stack task management application built for MEAtec's fullstack developer 
 ## Project Objective
 
 Develop a complete task management application where users can:
+
 - Register and authenticate securely
 - Manage their personal tasks with full CRUD operations
 - Experience a modern, responsive UI with dark mode support
@@ -13,6 +14,7 @@ Develop a complete task management application where users can:
 ## Technology Stack
 
 ### Frontend
+
 - **React 19** with **Vite** - Modern React development with fast builds
 - **TailwindCSS** - Utility-first CSS framework for responsive design
 - **Redux Toolkit** - State management with modern Redux patterns
@@ -24,6 +26,7 @@ Develop a complete task management application where users can:
 - **Jest + React Testing Library** - Comprehensive testing with coverage
 
 ### Backend
+
 - **Node.js + Express** (TypeScript) - Type-safe server development
 - **Prisma ORM** - Type-safe database access with migrations
 - **PostgreSQL** - Robust relational database
@@ -32,6 +35,7 @@ Develop a complete task management application where users can:
 - **Jest + Supertest** - API testing with coverage reports
 
 ### Key Features
+
 - Secure Authentication with JWT
 - Task Management with full CRUD operations
 - Dark Mode toggle
@@ -55,8 +59,8 @@ This project uses npm workspaces for monorepo management. All commands should be
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd MEAtec
+git clone https://github.com/mustafaakagunduz/meatec-task-management.git
+cd meatec-task-management
 ```
 
 ### 2. Install Dependencies
@@ -79,6 +83,8 @@ CREATE DATABASE meatec_taskmanager;
 
 Create a `.env` file in the `backend` directory by copying the example file:
 
+Run this comment on meatec-task-management folder
+
 ```bash
 cp .env.example backend/.env
 ```
@@ -93,7 +99,7 @@ PORT=3000
 NODE_ENV="development"
 ```
 
-**Important:** Replace `YOUR_USERNAME` and `YOUR_PASSWORD` with your actual PostgreSQL credentials.
+**Important:** Replace `YOUR_USERNAME` and `YOUR_PASSWORD` with your actual PostgreSQL credentials. Mostly it is postgres for username and postgres for password
 
 ### 5. Database Migration
 
@@ -115,6 +121,7 @@ npm run dev
 ```
 
 **Access the application:**
+
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000 (or your configured PORT)
 
@@ -138,6 +145,7 @@ npm run test:watch
 View coverage report: Open `backend/coverage/lcov-report/index.html` in your browser.
 
 **Backend test coverage includes:**
+
 - Authentication logic (register/login)
 - Task CRUD operations
 - JWT middleware functionality
@@ -161,6 +169,7 @@ npm run test:watch
 View coverage report: Open `frontend/coverage/lcov-report/index.html` in your browser.
 
 **Frontend test coverage includes:**
+
 - Form validation with Zod schemas
 - Component rendering and behavior
 - User interactions and state management
@@ -169,14 +178,17 @@ View coverage report: Open `frontend/coverage/lcov-report/index.html` in your br
 ## API Documentation
 
 ### Base URL
+
 ```
 http://localhost:3000/api
 ```
-*Note: If you configured a different PORT in your .env file, replace 3000 with your port number.*
+
+_Note: If you configured a different PORT in your .env file, replace 3000 with your port number._
 
 ### Authentication Endpoints
 
 #### Register User
+
 ```http
 POST /api/auth/register
 Content-Type: application/json
@@ -188,6 +200,7 @@ Content-Type: application/json
 ```
 
 **Response (201):**
+
 ```json
 {
   "message": "User registered successfully",
@@ -199,6 +212,7 @@ Content-Type: application/json
 ```
 
 #### Login User
+
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -210,6 +224,7 @@ Content-Type: application/json
 ```
 
 **Response (200):**
+
 ```json
 {
   "message": "Login successful",
@@ -224,16 +239,19 @@ Content-Type: application/json
 ### Task Endpoints
 
 **All task endpoints require JWT authentication via Authorization header:**
+
 ```http
 Authorization: Bearer <jwt-token>
 ```
 
 #### Get User Tasks
+
 ```http
 GET /api/tasks
 ```
 
 **Response (200):**
+
 ```json
 {
   "tasks": [
@@ -250,6 +268,7 @@ GET /api/tasks
 ```
 
 #### Create Task
+
 ```http
 POST /api/tasks
 Content-Type: application/json
@@ -262,6 +281,7 @@ Content-Type: application/json
 ```
 
 #### Update Task
+
 ```http
 PUT /api/tasks/:id
 Content-Type: application/json
@@ -274,6 +294,7 @@ Content-Type: application/json
 ```
 
 #### Delete Task
+
 ```http
 DELETE /api/tasks/:id
 ```
@@ -289,6 +310,7 @@ All endpoints return consistent error responses:
 ```
 
 Common HTTP status codes:
+
 - `400` - Bad Request (validation errors)
 - `401` - Unauthorized (invalid/missing JWT)
 - `404` - Not Found (resource doesn't exist)
